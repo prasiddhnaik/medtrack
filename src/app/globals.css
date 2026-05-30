@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0f6e56;
+  --color-primary-hover: #1d9e75;
+  --color-bg: #f7f6f2;
+  --color-surface: #ffffff;
+  --color-text: #1a1a18;
+  --color-text-muted: #6b6a64;
+  --color-border: #e8e6df;
+  --color-status-taken: #639922;
+  --color-status-taken-bg: #eaf3de;
+  --color-status-taken-text: #27500a;
+  --color-status-due: #ba7517;
+  --color-status-due-bg: #faeeda;
+  --color-status-due-text: #633806;
+  --color-status-missed: #e24b4a;
+  --color-status-missed-bg: #fcebeb;
+  --color-status-missed-text: #791f1f;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: #f7f6f2;
+  color: #1a1a18;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a,
+input {
+  outline-offset: 3px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid #1d9e75;
+}
+
+.font-serif-display {
+  font-family: var(--font-source-serif), Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1a18;
+    color: #f7f6f2;
+  }
+}

@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Medication {
+  id        String    @id @default(cuid())
+  name      String
+  dosage    String
+  times     String[]
+  createdAt DateTime  @default(now())
+  doses     DoseLog[]
+}
+
+model DoseLog {
+  id           String     @id @default(cuid())
+  medication   Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  medicationId String
+  scheduledFor DateTime
+  takenAt      DateTime?
+  status       DoseStatus @default(PENDING)
+  createdAt    DateTime   @default(now())
+
+  @@unique([medicationId, scheduledFor])
+  @@index([medicationId])
+  @@index([scheduledFor])
+}
+
+enum DoseStatus {
+  PENDING
+  TAKEN
+  MISSED
+}
