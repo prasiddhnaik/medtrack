@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MedTrack Google OAuth Consent Form Values</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f6f2;
+        --surface: #ffffff;
+        --text: #1a1a18;
+        --muted: #6b6a64;
+        --border: #e8e6df;
+        --primary: #0f6e56;
+        --warn-bg: #faeeda;
+        --warn-text: #633806;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        line-height: 1.15;
+      }
+
+      h1 {
+        font-size: clamp(32px, 5vw, 52px);
+        color: var(--primary);
+      }
+
+      h2 {
+        margin-top: 32px;
+        font-size: 22px;
+      }
+
+      p {
+        margin: 10px 0 0;
+        color: var(--muted);
+      }
+
+      table {
+        width: 100%;
+        margin-top: 14px;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        width: 32%;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      tr:last-child th,
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      code {
+        border-radius: 6px;
+        background: #eef4f1;
+        color: var(--primary);
+        padding: 2px 6px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        font-size: 0.92em;
+      }
+
+      .note {
+        margin-top: 18px;
+        border: 1px solid #ead7ad;
+        border-radius: 8px;
+        background: var(--warn-bg);
+        color: var(--warn-text);
+        padding: 14px 16px;
+      }
+
+      .note strong {
+        color: var(--warn-text);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>MedTrack Google OAuth Consent Form Values</h1>
+      <p>
+        Use these values in Google Cloud Console for the MedTrack OAuth consent
+        screen. The app is currently local/testing, so public domain fields
+        should be filled only after deployment.
+      </p>
+
+      <h2>App Information</h2>
+      <table>
+        <tr>
+          <th>App name</th>
+          <td><code>MedTrack</code></td>
+        </tr>
+        <tr>
+          <th>User support email</th>
+          <td><code>legoprasiddh@gmail.com</code></td>
+        </tr>
+        <tr>
+          <th>App logo</th>
+          <td>
+            Upload
+            <code>public/brand/medtrack-google-consent-logo.png</code>.
+            It is a PNG, 120px by 120px, and under 1 MB.
+          </td>
+        </tr>
+      </table>
+
+      <h2>App Domain</h2>
+      <table>
+        <tr>
+          <th>Application home page</th>
+          <td>
+            For local testing, leave blank if Google allows it. After deployment,
+            use your production URL, for example
+            <code>https://your-medtrack-domain.com/</code>.
+          </td>
+        </tr>
+        <tr>
+          <th>Application privacy policy link</th>
+          <td>
+            For local testing, leave blank if Google allows it. After deployment,
+            use <code>https://your-medtrack-domain.com/privacy</code>.
+          </td>
+        </tr>
+        <tr>
+          <th>Application Terms of Service link</th>
+          <td>
+            For local testing, leave blank if Google allows it. After deployment,
+            use <code>https://your-medtrack-domain.com/terms</code>.
+          </td>
+        </tr>
+      </table>
+
+      <div class="note">
+        <strong>Do not enter localhost in App domain fields.</strong>
+        Google OAuth redirect URIs can use localhost for development, but
+        authorised domains on the consent screen should be real public domains
+        you control.
+      </div>
+
+      <h2>Authorised Domains</h2>
+      <table>
+        <tr>
+          <th>Authorised domains</th>
+          <td>
+            For local testing, leave empty unless Google requires a domain. After
+            deployment, add only the root production domain, for example
+            <code>your-medtrack-domain.com</code>. Do not include
+            <code>https://</code> or paths.
+          </td>
+        </tr>
+      </table>
+
+      <h2>Developer Contact Information</h2>
+      <table>
+        <tr>
+          <th>Email addresses</th>
+          <td><code>legoprasiddh@gmail.com</code></td>
+        </tr>
+      </table>
+
+      <h2>OAuth Client Values For Local Testing</h2>
+      <table>
+        <tr>
+          <th>Authorised JavaScript origins</th>
+          <td><code>http://localhost:3000</code></td>
+        </tr>
+        <tr>
+          <th>Authorised redirect URIs</th>
+          <td><code>http://localhost:3000/api/auth/callback/google</code></td>
+        </tr>
+      </table>
+    </main>
+  </body>
+</html>

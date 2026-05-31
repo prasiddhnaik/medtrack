@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
-import { badRequestResponse, setupRequiredResponse } from "@/lib/api";
+import { badRequestResponse, setupRequiredResponse, unauthorizedResponse } from "@/lib/api";
 import { getPrisma, isDatabaseConfigured } from "@/lib/prisma";
+import { getApiSession } from "@/lib/session";
 import { parseMedicationInput } from "@/lib/validators";
 
 export async function GET() {
+  const session = await getApiSession();
+  if (!session) {
+    return unauthorizedResponse();
+  }
+
   if (!isDatabaseConfigured) {
     return setupRequiredResponse();
   }
@@ -17,6 +23,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const session = await getApiSession();
+  if (!session) {
+    return unauthorizedResponse();
+  }
+
   if (!isDatabaseConfigured) {
     return setupRequiredResponse();
   }
@@ -28,8 +39,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ medication }, { status: 201 });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Unable to create medication.";
-    return badRequestResponse(message);
+    if (error instanceof Error) {
+      return badRequestResponse(error.message);
+    }
+
+    return badRequestResponse("Unable to create medication.");
   }
 }

@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 .env*.local
 .next/
 node_modules/
@@ -7,3 +9,4 @@ coverage/
 *.tsbuildinfo
 MEDTRACK_PLAN.md
 .neon
+.vercel

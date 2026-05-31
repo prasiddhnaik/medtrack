@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
-import { setupRequiredResponse } from "@/lib/api";
+import { setupRequiredResponse, unauthorizedResponse } from "@/lib/api";
 import { getPrisma, isDatabaseConfigured } from "@/lib/prisma";
+import { getApiSession } from "@/lib/session";
 
 type RouteContext = {
   params: Promise<{
@@ -10,6 +11,11 @@ type RouteContext = {
 };
 
 export async function DELETE(_request: Request, context: RouteContext) {
+  const session = await getApiSession();
+  if (!session) {
+    return unauthorizedResponse();
+  }
+
   if (!isDatabaseConfigured) {
     return setupRequiredResponse();
   }

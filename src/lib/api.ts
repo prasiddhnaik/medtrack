@@ -13,3 +13,10 @@ export function setupRequiredResponse() {
 export function badRequestResponse(message: string) {
   return NextResponse.json({ error: message }, { status: 400 });
 }
+
+export function unauthorizedResponse() {
+  return NextResponse.json(
+    { error: "Sign in is required to use MedTrack." },
+    { status: 401 },
+  );
+}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DoseCard } from "@/components/DoseCard";
+import { ReminderControls } from "@/components/ReminderControls";
 import type { DoseLogWithMedication } from "@/types";
 
 export function DoseSchedule() {
@@ -78,7 +79,7 @@ export function DoseSchedule() {
   return (
     <section className="space-y-5">
       <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="text-[22px] font-medium leading-tight text-text">
               Today&apos;s schedule
@@ -86,12 +87,15 @@ export function DoseSchedule() {
             <p className="mt-1 text-[15px] text-text-muted">{todayLabel}</p>
           </div>
 
-          <p className="font-serif-display text-4xl leading-none text-primary">
-            {takenCount} / {totalCount}
-            <span className="ml-2 font-sans text-[15px] font-medium text-text-muted">
-              doses taken
-            </span>
-          </p>
+          <div className="flex flex-col items-start gap-3 sm:items-end">
+            <p className="font-serif-display text-4xl leading-none text-primary">
+              {takenCount} / {totalCount}
+              <span className="ml-2 font-sans text-[15px] font-medium text-text-muted">
+                doses taken
+              </span>
+            </p>
+            <ReminderControls doses={doses} />
+          </div>
         </div>
 
         <div className="mt-5 h-2 overflow-hidden rounded-full bg-border">

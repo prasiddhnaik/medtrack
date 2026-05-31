@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertTriangle, Flame, TrendingUp } from "lucide-react";
 import { AdherenceChart } from "@/components/AdherenceChart";
 import { StatCard } from "@/components/StatCard";
 import type { DailyAdherencePoint } from "@/types";
@@ -53,32 +54,35 @@ export function DashboardSummary() {
     return null;
   }
 
+  const roundedPercentage = Math.round(data.summary.percentage);
+  const missed = Math.max(data.summary.total - data.summary.taken, 0);
+
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
         <StatCard
-          label="Weekly adherence"
-          value={`${data.summary.percentage}%`}
-          detail={`${data.summary.taken} of ${data.summary.total} scheduled doses taken`}
+          label="This week"
+          value={`${roundedPercentage}%`}
+          detail={`${data.summary.taken} of ${data.summary.total} doses taken`}
+          icon={<TrendingUp size={22} strokeWidth={1.8} aria-hidden="true" />}
+          tone="hero"
         />
         <StatCard
           label="Current streak"
           value={`${data.streak} days`}
-          detail="Consecutive full-adherence days in the current week"
+          detail="Full-adherence run"
+          icon={<Flame size={22} strokeWidth={1.8} aria-hidden="true" />}
         />
         <StatCard
-          label="Tracked doses"
-          value={String(data.summary.total)}
-          detail="Dose logs included in the seven-day window"
+          label="Missed"
+          value={`${missed} doses`}
+          detail="Needs attention"
+          icon={<AlertTriangle size={22} strokeWidth={1.8} aria-hidden="true" />}
+          tone="danger"
         />
       </div>
 
-      <section>
-        <h2 className="mb-3 text-xl font-semibold text-slate-950">
-          Seven-day adherence
-        </h2>
-        <AdherenceChart data={data.daily} />
-      </section>
+      <AdherenceChart data={data.daily} />
     </div>
   );
 }

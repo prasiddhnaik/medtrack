@@ -1,7 +1,10 @@
 import { AppHeader } from "@/components/AppHeader";
 import { MedicationManager } from "@/components/MedicationManager";
+import { requirePageSession } from "@/lib/session";
 
-export default function MedicationsPage() {
+export default async function MedicationsPage() {
+  await requirePageSession();
+
   return (
     <>
       <AppHeader />

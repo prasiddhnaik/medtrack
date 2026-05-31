@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
-import { badRequestResponse, setupRequiredResponse } from "@/lib/api";
+import { badRequestResponse, setupRequiredResponse, unauthorizedResponse } from "@/lib/api";
 import { getWeeklyAdherence, getWeeklySummary, getCurrentStreak } from "@/lib/adherence";
 import { getDayRange, getDoseSlotsForDate } from "@/lib/schedule";
 import { getPrisma, isDatabaseConfigured } from "@/lib/prisma";
+import { getApiSession } from "@/lib/session";
 import { parseDoseUpdateInput } from "@/lib/validators";
 
 export async function GET(request: Request) {
+  const session = await getApiSession();
+  if (!session) {
+    return unauthorizedResponse();
+  }
+
   if (!isDatabaseConfigured) {
     return setupRequiredResponse();
   }
@@ -17,6 +23,10 @@ export async function GET(request: Request) {
 
   if (Number.isNaN(date.getTime())) {
     return badRequestResponse("date must be a valid date.");
+  }
+
+  if (!isWithinDoseScheduleWindow(date)) {
+    return badRequestResponse("Schedule date must be within 7 days of today.");
   }
 
   const prisma = getPrisma();
@@ -51,6 +61,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const session = await getApiSession();
+  if (!session) {
+    return unauthorizedResponse();
+  }
+
   if (!isDatabaseConfigured) {
     return setupRequiredResponse();
   }
@@ -71,12 +86,28 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ dose });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Unable to update dose.";
-    return badRequestResponse(message);
+    if (error instanceof Error && error.message.includes("doseLogId")) {
+      return badRequestResponse(error.message);
+    }
+
+    return badRequestResponse("Unable to update dose.");
   }
 }
 
 export async function PATCH() {
   return NextResponse.json({ error: "Use POST to mark a dose as taken." }, { status: 405 });
+}
+
+function isWithinDoseScheduleWindow(date: Date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const start = new Date(today);
+  start.setDate(start.getDate() - 7);
+
+  const end = new Date(today);
+  end.setDate(end.getDate() + 7);
+  end.setHours(23, 59, 59, 999);
+
+  return date >= start && date <= end;
 }

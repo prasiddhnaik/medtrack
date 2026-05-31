@@ -1,7 +1,10 @@
 import { AppHeader } from "@/components/AppHeader";
 import { DoseSchedule } from "@/components/DoseSchedule";
+import { requirePageSession } from "@/lib/session";
 
-export default function HomePage() {
+export default async function HomePage() {
+  await requirePageSession();
+
   return (
     <>
       <AppHeader />
