@@ -20,3 +20,10 @@ export async function getApiSession() {
   const session = await getAppSession();
   return session?.user ? session : null;
 }
+
+export async function getApiUserEmail() {
+  const session = await getApiSession();
+  const email = session?.user?.email?.trim().toLowerCase();
+
+  return email || null;
+}

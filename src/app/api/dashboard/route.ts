@@ -4,17 +4,14 @@ import {
   getWeeklyAdherence,
   getWeeklySummary,
 } from "@/lib/adherence";
-import { setupRequiredResponse } from "@/lib/api";
+import { setupRequiredResponse, unauthorizedResponse } from "@/lib/api";
 import { getPrisma, isDatabaseConfigured } from "@/lib/prisma";
-import { getApiSession } from "@/lib/session";
+import { getApiUserEmail } from "@/lib/session";
 
 export async function GET() {
-  const session = await getApiSession();
-  if (!session) {
-    return NextResponse.json(
-      { error: "Sign in is required to use MedTrack." },
-      { status: 401 },
-    );
+  const userEmail = await getApiUserEmail();
+  if (!userEmail) {
+    return unauthorizedResponse();
   }
 
   if (!isDatabaseConfigured) {
@@ -28,6 +25,7 @@ export async function GET() {
 
   const logs = await prisma.doseLog.findMany({
     where: {
+      userEmail,
       scheduledFor: {
         gte: since,
       },

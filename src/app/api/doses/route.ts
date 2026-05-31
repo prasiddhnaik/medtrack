@@ -3,12 +3,30 @@ import { badRequestResponse, setupRequiredResponse, unauthorizedResponse } from 
 import { getWeeklyAdherence, getWeeklySummary, getCurrentStreak } from "@/lib/adherence";
 import { getDayRange, getDoseSlotsForDate } from "@/lib/schedule";
 import { getPrisma, isDatabaseConfigured } from "@/lib/prisma";
-import { getApiSession } from "@/lib/session";
+import { getApiUserEmail } from "@/lib/session";
 import { parseDoseUpdateInput } from "@/lib/validators";
 
+const doseResponseFields = {
+  id: true,
+  medicationId: true,
+  scheduledFor: true,
+  takenAt: true,
+  status: true,
+  createdAt: true,
+  medication: {
+    select: {
+      id: true,
+      name: true,
+      dosage: true,
+      times: true,
+      createdAt: true,
+    },
+  },
+};
+
 export async function GET(request: Request) {
-  const session = await getApiSession();
-  if (!session) {
+  const userEmail = await getApiUserEmail();
+  if (!userEmail) {
     return unauthorizedResponse();
   }
 
@@ -31,12 +49,14 @@ export async function GET(request: Request) {
 
   const prisma = getPrisma();
   const medications = await prisma.medication.findMany({
+    where: { userEmail },
     orderBy: [{ name: "asc" }],
   });
   const slots = getDoseSlotsForDate(medications, date);
 
   await prisma.doseLog.createMany({
     data: slots.map((slot) => ({
+      userEmail,
       medicationId: slot.medicationId,
       scheduledFor: slot.scheduledFor,
     })),
@@ -46,14 +66,13 @@ export async function GET(request: Request) {
   const { start, end } = getDayRange(date);
   const doses = await prisma.doseLog.findMany({
     where: {
+      userEmail,
       scheduledFor: {
         gte: start,
         lt: end,
       },
     },
-    include: {
-      medication: true,
-    },
+    select: doseResponseFields,
     orderBy: [{ scheduledFor: "asc" }],
   });
 
@@ -61,8 +80,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const session = await getApiSession();
-  if (!session) {
+  const userEmail = await getApiUserEmail();
+  if (!userEmail) {
     return unauthorizedResponse();
   }
 
@@ -73,15 +92,25 @@ export async function POST(request: Request) {
   try {
     const { doseLogId } = parseDoseUpdateInput(await request.json());
     const prisma = getPrisma();
+    const existingDose = await prisma.doseLog.findFirst({
+      where: { id: doseLogId, userEmail },
+      select: { id: true },
+    });
+
+    if (!existingDose) {
+      return NextResponse.json(
+        { error: "Dose was not found." },
+        { status: 404 },
+      );
+    }
+
     const dose = await prisma.doseLog.update({
-      where: { id: doseLogId },
+      where: { id: existingDose.id },
       data: {
         status: "TAKEN",
         takenAt: new Date(),
       },
-      include: {
-        medication: true,
-      },
+      select: doseResponseFields,
     });
 
     return NextResponse.json({ dose });

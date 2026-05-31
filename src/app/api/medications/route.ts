@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import { badRequestResponse, setupRequiredResponse, unauthorizedResponse } from "@/lib/api";
 import { getPrisma, isDatabaseConfigured } from "@/lib/prisma";
-import { getApiSession } from "@/lib/session";
+import { getApiUserEmail } from "@/lib/session";
 import { parseMedicationInput } from "@/lib/validators";
 
+const medicationResponseFields = {
+  id: true,
+  name: true,
+  dosage: true,
+  times: true,
+  createdAt: true,
+};
+
 export async function GET() {
-  const session = await getApiSession();
-  if (!session) {
+  const userEmail = await getApiUserEmail();
+  if (!userEmail) {
     return unauthorizedResponse();
   }
 
@@ -16,6 +24,8 @@ export async function GET() {
 
   const prisma = getPrisma();
   const medications = await prisma.medication.findMany({
+    where: { userEmail },
+    select: medicationResponseFields,
     orderBy: [{ createdAt: "desc" }],
   });
 
@@ -23,8 +33,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await getApiSession();
-  if (!session) {
+  const userEmail = await getApiUserEmail();
+  if (!userEmail) {
     return unauthorizedResponse();
   }
 
@@ -35,7 +45,13 @@ export async function POST(request: Request) {
   try {
     const input = parseMedicationInput(await request.json());
     const prisma = getPrisma();
-    const medication = await prisma.medication.create({ data: input });
+    const medication = await prisma.medication.create({
+      data: {
+        ...input,
+        userEmail,
+      },
+      select: medicationResponseFields,
+    });
 
     return NextResponse.json({ medication }, { status: 201 });
   } catch (error) {

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 import { setupRequiredResponse, unauthorizedResponse } from "@/lib/api";
 import { getPrisma, isDatabaseConfigured } from "@/lib/prisma";
-import { getApiSession } from "@/lib/session";
+import { getApiUserEmail } from "@/lib/session";
 
 type RouteContext = {
   params: Promise<{
@@ -11,8 +10,8 @@ type RouteContext = {
 };
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const session = await getApiSession();
-  if (!session) {
+  const userEmail = await getApiUserEmail();
+  if (!userEmail) {
     return unauthorizedResponse();
   }
 
@@ -22,23 +21,15 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
   const { id } = await context.params;
   const prisma = getPrisma();
+  const result = await prisma.medication.deleteMany({
+    where: { id, userEmail },
+  });
 
-  try {
-    await prisma.medication.delete({
-      where: { id },
-    });
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      return NextResponse.json(
-        { error: "Medication was not found." },
-        { status: 404 },
-      );
-    }
-
-    throw error;
+  if (result.count === 0) {
+    return NextResponse.json(
+      { error: "Medication was not found." },
+      { status: 404 },
+    );
   }
 
   return NextResponse.json({ ok: true });
